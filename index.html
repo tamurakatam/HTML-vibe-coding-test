@@ -1,10 +1,277 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>My GitHub Pages</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Vibe Coding（バイブコーディング）の魅力</title>
+<style>
+  :root{
+    --bg: #0b1020;
+    --panel: #121733;
+    --text: #e8ecff;
+    --accent: #7c9cff;
+    --accent-2: #76e4ff;
+    --radius: 18px;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Inter",system-ui,sans-serif;color:var(--text);background:var(--bg);line-height:1.6;overflow-x:hidden}
+  .wrap{max-width:1100px;margin:0 auto;padding:28px 20px 80px}
+  header.hero{position:relative;overflow:hidden;border-radius:calc(var(--radius)*1.2);background:linear-gradient(135deg,#18224b,#0b1120);box-shadow:var(--shadow)}
+  .hero-inner{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;padding:36px 28px 12px}
+  .title{font-size:clamp(28px,5vw,44px);line-height:1.15;font-weight:900}
+  .burst{position:relative;height:260px;display:flex;align-items:center;justify-content:center}
+  .orbit{position:absolute;border-radius:50%;border:1px dashed #2b356f;animation:spin 26s linear infinite;opacity:.6}
+  .orbit:nth-child(2){width:210px;height:210px;animation-duration:20s}
+  .orbit:nth-child(3){width:150px;height:150px;animation-duration:14s}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .logo .core{width:96px;height:96px;border-radius:24px;background:linear-gradient(135deg,#7c9cff,#76e4ff);display:grid;place-items:center;font-weight:800;color:#0b1020;cursor:pointer;transition:transform .5s ease}
+  .logo .core:hover{transform:scale(1.15) rotate(8deg)}
+  section{margin-top:38px;opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
+  section.visible{opacity:1;transform:translateY(0)}
+  .card{background:linear-gradient(180deg,#13193a,#0f1530);border:1px solid #28306a;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);transition:transform .6s cubic-bezier(.22,1,.36,1),box-shadow .3s ease}
+  .card:hover{transform:translateY(-8px) scale(1.05) rotateZ(-1deg);box-shadow:0 18px 36px rgba(0,0,0,.6)}
+  .flow .step{transition:background .4s ease,transform .4s ease;cursor:pointer}
+  .flow .step:hover{background:linear-gradient(180deg,#1c2659,#151c44);transform:scale(1.1) rotate(-2deg)}
+  .reveal{opacity:0; transform: translateY(20px) scale(.98); transition: opacity .6s ease, transform .6s ease}
+  .reveal.in{opacity:1; transform: translateY(0) scale(1)}
+  .btn-area{text-align:center;margin-top:50px}
+  .btn{background:linear-gradient(135deg,#76e4ff,#7c9cff);color:#0b1020;padding:12px 24px;border:none;border-radius:999px;font-size:16px;font-weight:700;cursor:pointer;transition:transform .3s ease,box-shadow .3s ease}
+  .btn:hover{transform:translateY(-4px) scale(1.05);box-shadow:0 12px 24px rgba(118,228,255,.4)}
+  .toolbar{position:sticky;top:8px;z-index:50;display:flex;gap:10px;justify-content:flex-end;margin:10px 0}
+  .btn{position:relative;display:inline-flex;align-items:center;gap:6px;padding:10px 14px;border-radius:999px;border:1px solid #2b356f;background:linear-gradient(180deg,#141b3f,#0f1530);color:#e8ecff;font-weight:600;cursor:pointer;box-shadow:var(--shadow);user-select:none;transition:transform .15s ease,box-shadow .2s ease}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(0,0,0,.35)}
+  .btn:active{transform:translateY(0)}
+  .btn .rip{position:absolute;border-radius:50%;pointer-events:none;inset:auto auto auto auto;width:6px;height:6px;background:radial-gradient(circle,#76e4ff,transparent 70%);opacity:.9;transform:translate(-50%,-50%) scale(0);animation:rip .6s ease-out forwards}
+  @keyframes rip{to{opacity:0;transform:translate(-50%,-50%) scale(16)}}
+  .toolbar .spacer{flex:1}
+  .theme-light{--bg:#f6f8ff;--text:#121733}
+  .theme-light .card,.theme-light header.hero{background:linear-gradient(180deg,#ffffff,#eef2ff);color:#121733}
+  .theme-light .card{border-color:#d6dcff}
+  .burst canvas{position:absolute;inset:0;width:100%;height:100%;}
+  /* speed classes */
+  .speed-slow .orbit{animation-duration: 40s !important}
+  .speed-normal .orbit{animation-duration: 26s !important}
+  .speed-fast .orbit{animation-duration: 12s !important}
+</style>
 </head>
 <body>
-    <h1>Hello GitHub Pages!</h1>
+  <div class="wrap">
+    <nav class="toolbar">
+      <button class="btn" id="btn-play">▶ 再生</button>
+      <button class="btn" id="btn-speed">⚡ 速度: 標準</button>
+      <button class="btn" id="btn-theme">🌓 テーマ</button>
+      <button class="btn" id="btn-shuffle">🔀 シャッフル</button>
+      <span class="spacer"></span>
+      <button class="btn" id="btn-next">⬇ 次のセクション</button>
+    </nav>
+    <header class="hero">
+      <div class="hero-inner">
+        <div>
+          <h1 class="title">Vibe Coding（バイブコーディング）の魅力</h1>
+          <p>AIと人が協調する新しい開発スタイル。</p>
+        </div>
+        <div class="burst">
+          <canvas id="particles"></canvas>
+          <div class="orbit" style="width:280px;height:280px"></div>
+          <div class="orbit"></div>
+          <div class="orbit"></div>
+          <div class="logo"><div class="core">Vibe</div></div>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <h2>魅力のスナップショット</h2>
+      <div class="card">⚡ 素早い立ち上がり</div>
+      <div class="card">🎨 発想→試作の回転が速い</div>
+      <div class="card">🧑‍🤝‍🧑 ペアプロのような相互作用</div>
+    </section>
+
+    <section>
+      <h2>ワークフロー</h2>
+      <div class="flow">
+        <div class="step">🗒️ 要求を文章化</div>
+        <div class="step">🤖 生成</div>
+        <div class="step">🧑‍💻 レビュー</div>
+        <div class="step">🧪 テスト</div>
+      </div>
+    </section>
+
+    <div class="btn-area">
+      <button class="btn" id="animateBtn">✨ 全体をアニメ再生</button>
+    </div>
+  </div>
+
+<script>
+// スクロール時のフェードイン
+const sections = document.querySelectorAll('section');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.classList.add('visible');
+    }
+  });
+},{threshold:0.2});
+sections.forEach(sec => observer.observe(sec));
+
+// Coreロゴにクリックアニメーション
+const core = document.querySelector('.logo .core');
+core.addEventListener('click', () => {
+  core.animate([
+    { transform: 'scale(1) rotate(0)' },
+    { transform: 'scale(1.4) rotate(25deg)' },
+    { transform: 'scale(1) rotate(0)' }
+  ], { duration: 800, easing: 'ease-out' });
+});
+
+// Reveal animation for cards & headings
+const revealTargets = [
+  ...document.querySelectorAll('.card'),
+  ...document.querySelectorAll('.step'),
+  ...document.querySelectorAll('h2')
+];
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    }
+  })
+}, {rootMargin: '0px 0px -10% 0px', threshold:.08});
+revealTargets.forEach(el=>{ el.classList.add('reveal'); io.observe(el); });
+
+// Flow steps cycle highlight
+const steps = [...document.querySelectorAll('.flow .step')];
+let idx = 0;
+function cycle(){
+  steps.forEach(s=>s.classList.remove('active'));
+  steps[idx % steps.length].classList.add('active');
+  steps[idx % steps.length].animate([
+    { transform: 'scale(1)', offset:0},
+    { transform: 'scale(1.2)', offset:.5},
+    { transform: 'scale(1)', offset:1}
+  ], {duration:1200, easing:'ease-in-out'});
+  idx++;
+}
+cycle();
+setInterval(cycle, 2000);
+
+// Button: animate all cards sequentially
+const btn = document.getElementById('animateBtn');
+btn.addEventListener('click', () => {
+  document.querySelectorAll('.card').forEach((card,i)=>{
+    setTimeout(()=>{
+      card.animate([
+        { transform:'scale(1)', opacity:1 },
+        { transform:'scale(1.2) rotate(3deg)', opacity:.8 },
+        { transform:'scale(1)', opacity:1 }
+      ],{duration:600, easing:'ease-in-out'});
+    }, i*200);
+  });
+});
+</script>
+  <script>
+    // ===== Fancy controls & animations =====
+    const body = document.body;
+    // Ripple effect for buttons
+    document.querySelectorAll('.btn').forEach(b=>{
+      b.addEventListener('click', (e)=>{
+        const r = b.getBoundingClientRect();
+        const x = e.clientX - r.left; const y = e.clientY - r.top;
+        const span = document.createElement('span'); span.className='rip'; span.style.left=x+'px'; span.style.top=y+'px'; b.appendChild(span);
+        setTimeout(()=>span.remove(), 650);
+      });
+    });
+
+    // Scroll to next section
+    document.getElementById('btn-next').addEventListener('click', ()=>{
+      const next = document.querySelector('section');
+      next?.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+
+    // Theme toggle
+    const themeBtn = document.getElementById('btn-theme');
+    let light=false; themeBtn.addEventListener('click', ()=>{
+      light = !light; body.classList.toggle('theme-light', light);
+    });
+
+    // Speed control (affects orbit & particles & step cycle)
+    const speedBtn = document.getElementById('btn-speed');
+    const speedStates = ['speed-slow','speed-normal','speed-fast'];
+    let sIdx = 1; body.classList.add(speedStates[sIdx]);
+    function setSpeedLabel(){ speedBtn.textContent = '⚡ 速度: ' + (sIdx===0?'低速':sIdx===1?'標準':'高速'); }
+    setSpeedLabel();
+    speedBtn.addEventListener('click',()=>{
+      body.classList.remove(speedStates[sIdx]);
+      sIdx = (sIdx+1)%speedStates.length; body.classList.add(speedStates[sIdx]); setSpeedLabel();
+      particleSpeed = [0.5,1,1.7][sIdx];
+      restartStepCycle();
+    });
+
+    // Shuffle cards with FLIP animation
+    const shuffleBtn = document.getElementById('btn-shuffle');
+    shuffleBtn.addEventListener('click', ()=>{
+      const container = document.querySelectorAll('section')[0];
+      const cards = Array.from(container.querySelectorAll('.card'));
+      const first = new Map(cards.map(el=>[el, el.getBoundingClientRect()]));
+      // shuffle
+      for(let i=cards.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [cards[i],cards[j]]=[cards[j],cards[i]]; }
+      cards.forEach(c=>container.appendChild(c));
+      cards.forEach(el=>{
+        const last = el.getBoundingClientRect();
+        const dx = first.get(el).left - last.left;
+        const dy = first.get(el).top - last.top;
+        el.animate([
+          { transform:`translate(${dx}px,${dy}px)` },
+          { transform:'translate(0,0)' }
+        ], { duration: 500, easing:'cubic-bezier(.2,.6,.2,1)'});
+      });
+    });
+
+    // Particles in hero
+    const cvs = document.getElementById('particles');
+    const ctx = cvs.getContext('2d');
+    let w=0,h=0, rafId=null, playing=true, particleSpeed=1;
+    const pr = Math.min(2, window.devicePixelRatio||1);
+    function resize(){ const rect=cvs.getBoundingClientRect(); w=rect.width; h=rect.height; cvs.width=w*pr; cvs.height=h*pr; ctx.setTransform(pr,0,0,pr,0,0);} resize();
+    window.addEventListener('resize', resize);
+    const dots = Array.from({length: 80}).map(()=>({
+      x: Math.random()*w, y: Math.random()*h, r: Math.random()*2+0.5,
+      a: Math.random()*Math.PI*2, v: (Math.random()*0.6+0.2)
+    }));
+    function tick(){
+      ctx.clearRect(0,0,w,h);
+      for(const d of dots){
+        d.a += 0.01 * d.v * particleSpeed; d.x += Math.cos(d.a)*0.6*particleSpeed; d.y += Math.sin(d.a)*0.6*particleSpeed;
+        if(d.x<-10) d.x=w+10; if(d.x>w+10) d.x=-10; if(d.y<-10) d.y=h+10; if(d.y>h+10) d.y=-10;
+        ctx.globalAlpha=.85; ctx.fillStyle = '#76e4ff'; ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2); ctx.fill();
+      }
+      rafId = requestAnimationFrame(tick);
+    }
+    tick();
+
+    // Play/Pause
+    const playBtn = document.getElementById('btn-play'); let running=true;
+    function setPlayLabel(){ playBtn.textContent = running ? '⏸ 一時停止' : '▶ 再生'; }
+    setPlayLabel();
+    playBtn.addEventListener('click', ()=>{
+      running = !running; setPlayLabel();
+      if(running){ if(!rafId) tick(); restartStepCycle(); } else { cancelAnimationFrame(rafId); rafId=null; stopStepCycle(); }
+    });
+
+    // Flow step cycle control (override previous setInterval)
+    const steps = [...document.querySelectorAll('.flow .step')];
+    let cycleTimer=null, stepIdx=0;
+    function stepOnce(){ steps.forEach(s=>s.classList.remove('active')); if(steps.length){ steps[stepIdx%steps.length].classList.add('active'); stepIdx++; } }
+    function restartStepCycle(){ clearInterval(cycleTimer); const base = 1500; const factor=[1.6,1,0.6][sIdx]; cycleTimer=setInterval(stepOnce, base*factor); }
+    function stopStepCycle(){ clearInterval(cycleTimer); }
+    restartStepCycle();
+
+    // Respect reduced motion
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      body.classList.add('speed-slow'); sIdx=0; setSpeedLabel();
+    }
+  </script>
 </body>
 </html>
